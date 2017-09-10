@@ -29,6 +29,7 @@ var currentMarker = null;
 
 var clientID = 'H2OQCWRST3WU3BZUIPYPAFAN4XPUZ423Z3ZJXVHK4VP5UA3Q';
 var clientSecret = '0PHM0YNI4PKTID0UNUMSBDXQGQFCXMVQVAOD4EJVYKYGRZJ4';
+var infoWindowData;
 
 
 var NavBarViewModel = function() {
@@ -200,7 +201,7 @@ function getInfoWindowData(latlng, query) {
                 status: false,
                 response: {}
             });
-
+            alert("failed to get the response : " + response);
         }
     });
     return deferred.promise();
@@ -225,11 +226,36 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.setContent('<div id="pano"></div>');
         getInfoWindowData(marker.position, marker.title).then(function(data) {
             if (data.status) {
-                infowindow.setContent('<div><div class="title"><b>' + data.response.name + "</b></div>" +
-                    '<div class="content"><a href="' + data.response.url + '">Click Here!</a></div>' +
-                    '<div class="content">' + data.response.street + "</div>" +
-                    '<div class="content">' + data.response.city + "</div>" +
-                    '<div class="content">' + data.response.phone + '</div></div><div id="pano"></div>');
+                if(data.response.name !== undefined){
+                    infoWindowData = '<div><div class="title"><b>' + data.response.name + "</b></div>";
+                }else{
+                    infoWindowData = '<div><div class="title"><b>' + "Unknown Name" + "</b></div>";
+                }
+                if(data.response.url !== undefined){
+                    infoWindowData += '<div class="content"><a href="' + data.response.url + '">Click Here!</a></div>';
+                } else{
+                    infoWindowData += '<div class="content">Unknown Link</div>';
+                }
+                
+                if(data.response.street !== undefined){
+                    infoWindowData += '<div class="content">' + data.response.street + "</div>";
+                }else{
+                    infoWindowData += '<div class="content">' + "Unknown Street" + "</div>";
+                }
+                if(data.response.city !== undefined){
+                    infoWindowData += '<div class="content">' + data.response.city + "</div>";
+                } else{
+                    infoWindowData += '<div class="content">' + "Unknown City" + "</div>";
+                }
+                if(data.response.phone !== undefined){
+                  infoWindowData +=   '<div class="content">' + data.response.phone + '</div></div><div id="pano"></div>';  
+                } else{
+                    infoWindowData +=   '<div class="content">' + "Phone Number Unknown" + '</div></div><div id="pano"></div>'
+                }
+                
+                infowindow.setContent(infoWindowData);
+            
+          
 
             } else {
                 console.error('Unable to load data from foursqure. Setting default infoWindow');
