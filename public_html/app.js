@@ -8,10 +8,9 @@ and open the template in the editor.
     Author     : Pavan
 
 */
-
 var mapErrorHandler = function() {
     alert("failed to load the Google Map. Please check console for more options. ");
-}
+};
 
 $(document).ajaxError(function myErrorHandler(event, xhr, ajaxOptions, thrownError) {
 
@@ -241,7 +240,7 @@ function populateInfoWindow(marker, infowindow) {
                 if (data.response.url !== undefined && data.response.url !== "")
                     fourSquareData += '<div class="content"><a href="' + data.response.url + '">Click Here!</a></div>';
 
-                    fourSquareData += '<div class="content">' + data.response.street + "</div>" +
+                fourSquareData += '<div class="content">' + data.response.street + "</div>" +
                     '<div class="content">' + data.response.city + "</div>" +
                     '<div class="content">' + data.response.phone + '</div></div><div id="pano"></div>';
 
