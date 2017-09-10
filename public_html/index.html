@@ -17,6 +17,7 @@ and open the template in the editor.
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="app-cs.css">
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
@@ -24,41 +25,31 @@ and open the template in the editor.
 </head>
 
 <body>
-    <main>
-    <div  class="main_body">
-        <div class="top_bar">
-            <svg data-bind="click: openOrCloseNav" class="nav_btn_img" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" width="20px" height="20px" viewBox="0 0 124 124" style="enable-background:new 0 0 124 124;" xml:space="preserve">
-                <g>
-                    <path d="M112,6H12C5.4,6,0,11.4,0,18s5.4,12,12,12h100c6.6,0,12-5.4,12-12S118.6,6,112,6z" fill="#006DF0" />
-                    <path d="M112,50H12C5.4,50,0,55.4,0,62c0,6.6,5.4,12,12,12h100c6.6,0,12-5.4,12-12C124,55.4,118.6,50,112,50z" fill="#006DF0" />
-                    <path d="M112,94H12c-6.6,0-12,5.4-12,12s5.4,12,12,12h100c6.6,0,12-5.4,12-12S118.6,94,112,94z" fill="#006DF0" />
-                </g>
-            </svg>
-        </div>
-        <div>
-            <div id="map_body" class="map_body"></div>
-        </div>
-    </div>
-    </main>
-  
     <aside>
-    <div class="side_nav_places_list">
-        <h1>Places in Hyderabad</h1>
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input data-bind="textInput: inputPlaceFilter, event: {keyup : test}" class=" place_input mdl-textfield__input mdl-textfield__input--colored" type="text">
-            <label class="mdl-textfield__label mdl-textfield__input--colored">Station Location</label>
+        <div class="side_nav_places_list" data-bind="css: optionStatus()  ">
+            <h1>Places in Hyderabad</h1>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input data-bind="textInput: inputPlaceFilter, event: {keyup : test}" class=" place_input mdl-textfield__input mdl-textfield__input--colored" type="text">
+                <label class="mdl-textfield__label mdl-textfield__input--colored">Station Location</label>
+            </div>
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Filter</button>
+            <ul data-bind="foreach: filterPlaces" class="place_name">
+                <li data-bind="text:  title,click: $parent.showOnClick"></li>
+            </ul>
         </div>
-        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Filter</button>
-      
-
-        <ul data-bind="foreach: filterPlaces" class="place_name">
-            <li data-bind="text:  title,click: $parent.showOnClick"></li>
-        </ul>
-    </div>
-        </aside>
-
-     <script type="text/javascript" src="app.js"></script>
-     <script async defer  src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCsAMP4aHkb7_Ow2IDKNEB-dx5z7cx4bV0&libraries=places&callback=initMap" onerror="mapErrorHandler()" ></script>
+    </aside>
+    <main>
+        <div class="main_body">
+            <div class="top_bar">
+                <span class="glyphicon glyphicon-menu-hamburger " data-bind="click:openOrCloseNav ,css: navBarBUttonStatus()  "></span>
+            </div>
+            <div class="map_wrapper">
+                <div id="map_body" class="map_body"></div>
+            </div>
+        </div>
+    </main>
+    <script type="text/javascript" src="app.js"></script>
+    <script async defer src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCsAMP4aHkb7_Ow2IDKNEB-dx5z7cx4bV0&libraries=places&callback=initMap" onerror="mapErrorHandler()" ></script>
 </body>
 
 </html>

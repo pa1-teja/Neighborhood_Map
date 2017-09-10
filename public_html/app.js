@@ -6,11 +6,17 @@ and open the template in the editor.
 /* 
     Created on : Aug 31, 2017, 3:30:38 PM
     Author     : Pavan
+
 */
-//$(document).ajaxError(function myErrorHandler(event, xhr, ajaxOptions, thrownError) {
-//   
-//    alert("There was an error accessing url! Please check console for more options. ");
-//});
+
+var mapErrorHandler = function() {
+    alert("failed to load the Google Map. Please check console for more options. ");
+}
+
+$(document).ajaxError(function myErrorHandler(event, xhr, ajaxOptions, thrownError) {
+
+    alert("There was an error accessing url! Please check console for more options. ");
+});
 
 var placeInputFilter;
 var openOrcloseNavWindow = false;
@@ -29,13 +35,14 @@ var currentMarker = null;
 
 var clientID = 'H2OQCWRST3WU3BZUIPYPAFAN4XPUZ423Z3ZJXVHK4VP5UA3Q';
 var clientSecret = '0PHM0YNI4PKTID0UNUMSBDXQGQFCXMVQVAOD4EJVYKYGRZJ4';
-var infoWindowData;
 
 
 var NavBarViewModel = function() {
     var self = this;
     self.places = ko.observableArray();
     self.inputPlaceFilter = ko.observable("");
+
+    self.isFilterPresent = ko.observable(false);
 
     self.test = function() {
         console.log("input text : " + self.inputPlaceFilter());
@@ -63,6 +70,19 @@ var NavBarViewModel = function() {
     };
 
 
+    // returns class for left pane
+    self.optionStatus = ko.pureComputed(function() {
+        return self.isFilterPresent() ? "side_nav_places_list" : "side_nav_places_hidden";
+    }, NavBarViewModel);
+
+    // returns class for left pane
+    self.navBarBUttonStatus = ko.pureComputed(function() {
+
+        return !self.isFilterPresent() ? "nav_btn_img" : "nav_btn_img_with_filter";
+    }, NavBarViewModel);
+
+   
+
 };
 
 
@@ -71,21 +91,8 @@ ko.applyBindings(navBarModel);
 
 function openOrCloseNav() {
 
-    if (openOrcloseNavWindow) {
-        /* Set the width of the side navigation to 0 and the left margin of the page content to 0, and the background color of body to white */
-          $(".side_nav_places_list").width(0);
-        $(".main_body").css("margin-left", 0);
-        $(document.body).css("background-color", "white");
-
-        openOrcloseNavWindow = false;
-    } else {
-        /* Set the width of the side navigation to 350px and the left margin of the page content to 300px and add a black background color to body */
-          $(".side_nav_places_list").width(350);
-        $(".main_body").css("margin-left", 350);
-        $(document.body).css("background-color", "rgba(0,0,0,0.4)");
-        
-        openOrcloseNavWindow = true;
-    }
+    navBarModel.isFilterPresent(!navBarModel.isFilterPresent());
+    openOrcloseNavWindow = !openOrcloseNavWindow;
 }
 
 //Google Maps PlacesAPI
@@ -153,7 +160,8 @@ function getInfoWindowData(latlng, query) {
                 phone: '',
                 name: ''
             };
-       var results = {};
+
+            var results = {};
             if (data.response.venues.length > 0) {
                 results = data.response.venues[0];
                 response.url = results.url;
@@ -201,7 +209,8 @@ function getInfoWindowData(latlng, query) {
                 status: false,
                 response: {}
             });
-            alert("failed to get the response : " + response);
+
+
         }
     });
     return deferred.promise();
@@ -226,39 +235,14 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.setContent('<div id="pano"></div>');
         getInfoWindowData(marker.position, marker.title).then(function(data) {
             if (data.status) {
-                if(data.response.name !== undefined){
-                    infoWindowData = '<div><div class="title"><b>' + data.response.name + "</b></div>";
-                }else{
-                    infoWindowData = '<div><div class="title"><b>' + "Unknown Name" + "</b></div>";
-                }
-                if(data.response.url !== undefined){
-                    infoWindowData += '<div class="content"><a href="' + data.response.url + '">Click Here!</a></div>';
-                } else{
-                    infoWindowData += '<div class="content">Unknown Link</div>';
-                }
-                
-                if(data.response.street !== undefined){
-                    infoWindowData += '<div class="content">' + data.response.street + "</div>";
-                }else{
-                    infoWindowData += '<div class="content">' + "Unknown Street" + "</div>";
-                }
-                if(data.response.city !== undefined){
-                    infoWindowData += '<div class="content">' + data.response.city + "</div>";
-                } else{
-                    infoWindowData += '<div class="content">' + "Unknown City" + "</div>";
-                }
-                if(data.response.phone !== undefined){
-                  infoWindowData +=   '<div class="content">' + data.response.phone + '</div></div><div id="pano"></div>';  
-                } else{
-                    infoWindowData +=   '<div class="content">' + "Phone Number Unknown" + '</div></div><div id="pano"></div>'
-                }
-                
-                infowindow.setContent(infoWindowData);
-            
-          
+                infowindow.setContent('<div><div class="title"><b>' + data.response.name + "</b></div>" +
+                    '<div class="content"><a href="' + data.response.url + '">Click Here!</a></div>' +
+                    '<div class="content">' + data.response.street + "</div>" +
+                    '<div class="content">' + data.response.city + "</div>" +
+                    '<div class="content">' + data.response.phone + '</div></div><div id="pano"></div>');
 
             } else {
-                console.error('Unable to load data from foursqure. Setting default infoWindow');
+                console.info('Unable to load data from foursqure. Setting default infoWindow');
                 infowindow.setContent('<div class="title">' + marker.title + '</div><div id="pano"></div>');
             }
 
@@ -351,7 +335,7 @@ function initMap() {
             service.nearbySearch({
                 location: hydCoordinates,
                 radius: 50000,
-                type: ['shopping_mall']
+                type: ['shopping_mall', 'bowling_alley']
             }, callback);
 
         } else {
@@ -362,8 +346,6 @@ function initMap() {
     $(window).resize(function() {
         fitToBound(navBarModel.filterPlaces());
     });
-}
 
- function mapErrorHandler() {
-        alert("failed to load the Google Map");
-    }
+
+}
