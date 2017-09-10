@@ -163,7 +163,8 @@ function getInfoWindowData(latlng, query) {
 
             var results = {};
             if (data.response.venues.length > 0) {
-                results = data.response.venues[0];
+          results = data.response.venues[0];
+                if(response.url)
                 response.url = results.url;
                 console.log("infowindow url: " + response.url);
                 if (response.url === undefined) {
@@ -192,7 +193,7 @@ function getInfoWindowData(latlng, query) {
                 } else {
                     response.phone = response.phone;
                 }
-
+                
                 deferred.resolve({
                     status: true,
                     response: response
@@ -209,8 +210,7 @@ function getInfoWindowData(latlng, query) {
                 status: false,
                 response: {}
             });
-
-
+            alert("Unable to load data from foursqure. Setting default infoWindow");
         }
     });
     return deferred.promise();
@@ -234,12 +234,21 @@ function populateInfoWindow(marker, infowindow) {
 
         infowindow.setContent('<div id="pano"></div>');
         getInfoWindowData(marker.position, marker.title).then(function(data) {
+            var fourSquareData;
             if (data.status) {
-                infowindow.setContent('<div><div class="title"><b>' + data.response.name + "</b></div>" +
-                    '<div class="content"><a href="' + data.response.url + '">Click Here!</a></div>' +
-                    '<div class="content">' + data.response.street + "</div>" +
-                    '<div class="content">' + data.response.city + "</div>" +
-                    '<div class="content">' + data.response.phone + '</div></div><div id="pano"></div>');
+                
+                if(data.response.name !== undefined)
+                    fourSquareData = '<div><div class="title"><b>' + data.response.name + "</b></div>";
+                if(data.response.url !== undefined)
+                    fourSquareData += '<div class="content"><a href="' + data.response.url + '">Click Here!</a></div>';
+                if(data.response.street !== undefined)
+                    fourSquareData += '<div class="content">' + data.response.street + "</div>";
+                if(data.response.city !== undefined)
+                    fourSquareData += '<div class="content">' + data.response.city + "</div>";
+                if(data.response.phone !== undefined)
+                    fourSquareData += '<div class="content">' + data.response.phone + '</div></div><div id="pano"></div>';
+                
+                infowindow.setContent(fourSquareData);
 
             } else {
                 console.info('Unable to load data from foursqure. Setting default infoWindow');
