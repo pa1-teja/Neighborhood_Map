@@ -81,7 +81,7 @@ var NavBarViewModel = function() {
         return !self.isFilterPresent() ? "nav_btn_img" : "nav_btn_img_with_filter";
     }, NavBarViewModel);
 
-   
+
 
 };
 
@@ -163,9 +163,9 @@ function getInfoWindowData(latlng, query) {
 
             var results = {};
             if (data.response.venues.length > 0) {
-          results = data.response.venues[0];
-                if(response.url)
-                response.url = results.url;
+                results = data.response.venues[0];
+                if (response.url)
+                    response.url = results.url;
                 console.log("infowindow url: " + response.url);
                 if (response.url === undefined) {
                     response.url = "URL unknown";
@@ -193,7 +193,7 @@ function getInfoWindowData(latlng, query) {
                 } else {
                     response.phone = response.phone;
                 }
-                
+
                 deferred.resolve({
                     status: true,
                     response: response
@@ -236,18 +236,15 @@ function populateInfoWindow(marker, infowindow) {
         getInfoWindowData(marker.position, marker.title).then(function(data) {
             var fourSquareData;
             if (data.status) {
-                
-                if(data.response.name !== undefined)
-                    fourSquareData = '<div><div class="title"><b>' + data.response.name + "</b></div>";
-                if(data.response.url !== undefined)
+                // if(data.response.name !== undefined)
+                fourSquareData = '<div><div class="title"><b>' + data.response.name + "</b></div>";
+                if (data.response.url !== undefined && data.response.url !== "")
                     fourSquareData += '<div class="content"><a href="' + data.response.url + '">Click Here!</a></div>';
-                if(data.response.street !== undefined)
-                    fourSquareData += '<div class="content">' + data.response.street + "</div>";
-                if(data.response.city !== undefined)
-                    fourSquareData += '<div class="content">' + data.response.city + "</div>";
-                if(data.response.phone !== undefined)
-                    fourSquareData += '<div class="content">' + data.response.phone + '</div></div><div id="pano"></div>';
-                
+
+                    fourSquareData += '<div class="content">' + data.response.street + "</div>" +
+                    '<div class="content">' + data.response.city + "</div>" +
+                    '<div class="content">' + data.response.phone + '</div></div><div id="pano"></div>';
+
                 infowindow.setContent(fourSquareData);
 
             } else {
